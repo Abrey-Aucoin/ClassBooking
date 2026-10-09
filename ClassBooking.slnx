@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="ClassBooking.Core/ClassBooking.Core.csproj" />
+  <Project Path="ClassBooking.Tests/ClassBooking.Tests.csproj" />
+  <Project Path="ClassBooking.Web/ClassBooking.Web.csproj" />
+</Solution>
