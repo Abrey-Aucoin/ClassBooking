@@ -14,4 +14,8 @@ public class Instructor
 
     [MaxLength(1000)]
     public string? Bio { get; set; }
+
+    public List<FitnessClass> FitnessClasses { get; private set; } = [];
+
+
 }
