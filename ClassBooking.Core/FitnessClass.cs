@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection.Metadata;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ClassBooking.Core
 {
@@ -86,5 +89,38 @@ namespace ClassBooking.Core
             _bookings.Add(booking);
             return booking;
         }
-     }
+        
+
+        // cancel bookings
+        public List<Notification> CancelBooking(Booking booking, DateTime now)
+        {
+            var notifications = new List<Notification>();
+            if (!_bookings.Contains(booking))
+                throw new InvalidOperationException("This booking does not belong to this class.");
+            if (booking.Status == BookingStatus.Confirmed && now >= StartTime - MarketRelease)
+                throw new InvalidOperationException("Bookings can't be cancelled within an hour of the class.");
+            var heldSpot = booking.Status is BookingStatus.Confirmed or BookingStatus.Offered;
+            booking.Cancel();
+
+            if (heldSpot && now < StartTime - MarketRelease)
+                OfferOpenSpots(now, notifications);
+
+            return notifications;
+        }
+
+        // Offer newly opened spots to waitlist
+        private void OfferOpenSpots(DateTime now, List<Notification> notifications)
+        {
+            var fullHold = now + HoldDuration;
+            var releaseTime = StartTime - MarketRelease;
+            var holdEnd = fullHold < releaseTime ? fullHold : releaseTime;
+            while (AvailableSpots > 0 && Waitlist.Any())
+            {
+                var next = Waitlist.First();
+                next.Offer(holdEnd);
+                notifications.Add(new Notification(next.MemberEmail, $"A spot opened up for {Title}", $"Claim before {holdEnd:g}."));
+            }
+
+        }
+    }
 }
