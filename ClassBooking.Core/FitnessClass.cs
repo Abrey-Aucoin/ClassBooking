@@ -122,5 +122,20 @@ namespace ClassBooking.Core
             }
 
         }
+        // Claim the offer 
+
+        public void ClaimOffer(Booking booking, DateTime now)
+        {
+            if (!_bookings.Contains(booking))
+                throw new InvalidOperationException("This booking does not belong to this class.");
+
+            if (booking.Status != BookingStatus.Offered)
+                throw new InvalidOperationException("This booking does not have an open offer.");
+
+            if (now >= booking.HoldExpiresAt)
+                throw new InvalidOperationException("This offer has expired.");
+
+            booking.ClaimOffer();
+        }
     }
 }
