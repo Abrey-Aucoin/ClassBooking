@@ -138,6 +138,49 @@ namespace ClassBooking.Core
             booking.ClaimOffer();
         }
 
+        //process the expired holds
+
+        public List<Notification> ProcessExpiredHolds(DateTime now)
+        {
+            var notifications = new List<Notification>();
+
+            if (IsCancelled)
+                return notifications;
+
+            if (now >= StartTime - MarketRelease)
+            {
+                var waiting = _bookings
+                    .Where(b => b.Status is BookingStatus.Waitlisted or BookingStatus.Offered)
+                    .ToList();
+
+                if (waiting.Count == 0)
+                    return notifications;
+
+                var openSpots = Capacity - ConfirmedCount;
+
+                foreach (var booking in waiting)
+                    notifications.Add(new Notification(booking.MemberEmail, $"Spots open in {Title}",
+                        $"The waitlist has closed and {openSpots} spot(s) are now open to everyone. Book now if you still want in."));
+
+                foreach (var booking in waiting)
+                    booking.Expire();
+
+                return notifications;
+            }
+
+            var expired = _bookings
+                .Where(b => b.Status == BookingStatus.Offered && now >= b.HoldExpiresAt)
+                .ToList();
+
+            foreach (var booking in expired)
+                booking.Expire();
+
+            if (expired.Count > 0)
+                OfferOpenSpots(now, notifications);
+
+            return notifications;
+        }
+
         //Change class capacity
         public List<Notification> ChangeCapacity(int newCapacity, DateTime now)
         {
