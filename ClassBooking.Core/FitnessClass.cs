@@ -138,46 +138,27 @@ namespace ClassBooking.Core
             booking.ClaimOffer();
         }
 
-        // Process the expired holds
-        public List<Notification> ProcessExpiredHolds(DateTime now)
+        //Change class capacity
+        public List<Notification> ChangeCapacity(int newCapacity, DateTime now)
         {
             var notifications = new List<Notification>();
 
             if (IsCancelled)
-                return notifications;
+                throw new InvalidOperationException("This class has been cancelled.");
 
-            if (now >= StartTime - MarketRelease)
-            {
-                var waiting = _bookings
-                    .Where(b => b.Status is BookingStatus.Waitlisted or BookingStatus.Offered)
-                    .ToList();
+            if (newCapacity < 1)
+                throw new ArgumentOutOfRangeException(nameof(newCapacity), "Capacity must be at least 1.");
 
-                if (waiting.Count == 0)
-                    return notifications;
+            if (newCapacity < ConfirmedCount + OfferedCount)
+                throw new InvalidOperationException("Capacity can't be lower than the number of confirmed and offered bookings.");
 
-                var openSpots = Capacity - ConfirmedCount;
+            Capacity = newCapacity;
 
-                foreach (var booking in waiting)
-                    notifications.Add(new Notification(booking.MemberEmail, $"Spots open in {Title}",
-                        $"The waitlist has closed and {openSpots} spot(s) are now open to everyone. Book now if you still want in."));
-
-                foreach (var booking in waiting)
-                    booking.Expire();
-
-                return notifications;
-            }
-
-            var expired = _bookings
-                .Where(b => b.Status == BookingStatus.Offered && now >= b.HoldExpiresAt)
-                .ToList();
-
-            foreach (var booking in expired)
-                booking.Expire();
-
-            if (expired.Count > 0)
+            if (now < StartTime - MarketRelease)
                 OfferOpenSpots(now, notifications);
 
             return notifications;
         }
+
     }
 }
