@@ -137,5 +137,28 @@ namespace ClassBooking.Core
 
             booking.ClaimOffer();
         }
+
+        //Change class capacity
+        public List<Notification> ChangeCapacity(int newCapacity, DateTime now)
+        {
+            var notifications = new List<Notification>();
+
+            if (IsCancelled)
+                throw new InvalidOperationException("This class has been cancelled.");
+
+            if (newCapacity < 1)
+                throw new ArgumentOutOfRangeException(nameof(newCapacity), "Capacity must be at least 1.");
+
+            if (newCapacity < ConfirmedCount + OfferedCount)
+                throw new InvalidOperationException("Capacity can't be lower than the number of confirmed and offered bookings.");
+
+            Capacity = newCapacity;
+
+            if (now < StartTime - MarketRelease)
+                OfferOpenSpots(now, notifications);
+
+            return notifications;
+        }
+
     }
 }
