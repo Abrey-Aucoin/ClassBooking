@@ -203,5 +203,31 @@ namespace ClassBooking.Core
             return notifications;
         }
 
+        // Cancel the whole class
+
+        public List<Notification> Cancel(DateTime now)
+        {
+            var notifications = new List<Notification>();
+
+            if (IsCancelled)
+                throw new InvalidOperationException("This class has already been cancelled.");
+
+            if (now >= StartTime)
+                throw new InvalidOperationException("A class can't be cancelled after it has started.");
+
+            var activeBookings = _bookings.Where(b => b.IsActive).ToList();
+
+            foreach (var booking in activeBookings)
+            {
+                notifications.Add(new Notification(booking.MemberEmail, $"{Title} has been cancelled",
+                    $"Your {Title} class on {StartTime:g} UTC has been cancelled."));
+                booking.Cancel();
+            }
+
+            IsCancelled = true;
+
+            return notifications;
+        }
+
     }
 }
