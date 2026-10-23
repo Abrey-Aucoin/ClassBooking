@@ -229,5 +229,28 @@ namespace ClassBooking.Core
             return notifications;
         }
 
+        //Update class details
+
+        public void UpdateDetails(string title, string? description, Category category, int instructorId, DateTime startTime, DateTime now)
+        {
+            if (IsCancelled)
+                throw new InvalidOperationException("A cancelled class can't be edited.");
+            if (now >= StartTime)
+                throw new InvalidOperationException("Class already started.");
+
+            if (startTime != StartTime)
+            {
+                if (_bookings.Any(b => b.IsActive))
+                    throw new InvalidOperationException("The start time can't change once people have booked.");
+
+                if (startTime <= now)
+                    throw new InvalidOperationException("The start time must be in the future.");
+            }
+            Title = title;
+            Description = description;
+            Category = category;
+            InstructorId = instructorId;
+            StartTime = startTime;
+        }
     }
 }
