@@ -1,0 +1,88 @@
+﻿@model ClassDetailsViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    var canBook = Model.State is BookingState.Open or BookingState.WaitlistOnly;
+}
+
+<a class="back" asp-controller="Home" asp-action="Index" asp-route-category="@Model.Category">&larr; Back to @Model.Category.Spaced()</a>
+
+<div class="detail-grid">
+    <section>
+        <span class="badge">@Model.Category.Spaced()</span>
+        <h1>@Model.Title</h1>
+        <div class="facts">
+            <span>with @Model.InstructorName</span>
+            <span>@Model.StartTime.ToClassTime()</span>
+            <span>@Model.Capacity spots</span>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p class="description">@Model.Description</p>
+        }
+    </section>
+
+    <aside class="stack">
+        <div class="card">
+            @switch (Model.State)
+            {
+                case BookingState.Open:
+                    <h2>Book a spot</h2>
+                    <p class="availability"><strong>@Model.SpotsLeft</strong> of @Model.Capacity spots left</p>
+                    break;
+                case BookingState.WaitlistOnly:
+                    <h2>Join the waitlist</h2>
+                    <p class="availability">This class is full. @Model.WaitlistCount of @FitnessClass.WaitlistLimit waitlist spots are taken.</p>
+                    <p class="hint">When a spot opens, it's offered to the waitlist in order. You'll get an email and have a limited time to claim it.</p>
+                    break;
+                case BookingState.Full:
+                    <h2>Class full</h2>
+                    <p class="availability">This class and its waitlist are full.</p>
+                    break;
+                case BookingState.Closed:
+                    <h2>Sign-up closed</h2>
+                    <p class="availability">Sign-up for this class has closed.</p>
+                    break;
+                case BookingState.Cancelled:
+                    <h2>Class cancelled</h2>
+                    <p class="availability">This class has been cancelled.</p>
+                    break;
+            }
+
+            @if (canBook)
+            {
+                <form method="post" asp-controller="Classes" asp-action="Book" class="form">
+                    <input type="hidden" asp-for="BookingForm.ClassId" />
+                    <div class="field">
+                        <label asp-for="BookingForm.MemberName"></label>
+                        <input asp-for="BookingForm.MemberName" autocomplete="name" />
+                        <span asp-validation-for="BookingForm.MemberName"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="BookingForm.MemberEmail"></label>
+                        <input asp-for="BookingForm.MemberEmail" autocomplete="email" />
+                        <span asp-validation-for="BookingForm.MemberEmail"></span>
+                    </div>
+                    <button type="submit" class="btn btn-block">@(Model.State == BookingState.Open ? "Book this class" : "Join the waitlist")</button>
+                </form>
+            }
+        </div>
+
+        <div class="card">
+            <h3>Already booked?</h3>
+            <p class="hint">Enter the email you booked with to see or change your booking.</p>
+            <form method="post" asp-controller="Classes" asp-action="FindBooking" class="form form-tight">
+                <input type="hidden" asp-for="FindBooking.ClassId" />
+                <div class="field">
+                    <label asp-for="FindBooking.Email"></label>
+                    <input asp-for="FindBooking.Email" autocomplete="email" />
+                    <span asp-validation-for="FindBooking.Email"></span>
+                </div>
+                <button type="submit" class="btn btn-secondary btn-block">Find my booking</button>
+            </form>
+        </div>
+    </aside>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

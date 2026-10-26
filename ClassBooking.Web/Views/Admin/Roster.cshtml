@@ -1,0 +1,94 @@
+﻿@model RosterViewModel
+@{
+    ViewData["Title"] = $"{Model.Title} roster";
+}
+
+<a class="back" asp-action="Index">&larr; Back to classes</a>
+
+<div class="page-head page-head-row">
+    <div>
+        <h1>@Model.Title</h1>
+        <p class="lede">@Model.StartTime.ToClassTime() &middot; @Model.Confirmed.Count of @Model.Capacity spots filled</p>
+    </div>
+    @if (Model.IsCancelled)
+    {
+        <span class="badge badge-danger">Cancelled</span>
+    }
+    else
+    {
+        <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@Model.ClassId">Edit class</a>
+    }
+</div>
+
+<section class="section">
+    <h2>Confirmed <span class="badge badge-muted">@Model.Confirmed.Count</span></h2>
+    @if (Model.Confirmed.Count == 0)
+    {
+        <p class="empty">Nobody is confirmed yet.</p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Name</th><th>Email</th><th>Booked</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var entry in Model.Confirmed)
+                    {
+                        <tr><td>@entry.Name</td><td>@entry.Email</td><td>@entry.CreatedAt.ToShortClassTime()</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<section class="section">
+    <h2>Holding an offer <span class="badge badge-warn">@Model.Offered.Count</span></h2>
+    @if (Model.Offered.Count == 0)
+    {
+        <p class="empty">No open offers.</p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Name</th><th>Email</th><th>Hold ends</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var entry in Model.Offered)
+                    {
+                        <tr><td>@entry.Name</td><td>@entry.Email</td><td>@entry.HoldExpiresAt?.ToShortClassTime()</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<section class="section">
+    <h2>Waitlist <span class="badge badge-muted">@Model.Waitlist.Count of @FitnessClass.WaitlistLimit</span></h2>
+    @if (Model.Waitlist.Count == 0)
+    {
+        <p class="empty">Nobody is waiting.</p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>#</th><th>Name</th><th>Email</th><th>Joined</th></tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.Waitlist.Count; i++)
+                    {
+                        var entry = Model.Waitlist[i];
+                        <tr><td>@(i + 1)</td><td>@entry.Name</td><td>@entry.Email</td><td>@entry.CreatedAt.ToShortClassTime()</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

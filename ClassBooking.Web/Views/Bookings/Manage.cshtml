@@ -1,0 +1,55 @@
+﻿@model ManageBookingViewModel
+@{
+    ViewData["Title"] = "Your booking";
+
+    var badge = Model.Status switch
+    {
+        BookingStatus.Confirmed => "badge",
+        BookingStatus.Offered => "badge badge-warn",
+        BookingStatus.Waitlisted => "badge badge-muted",
+        _ => "badge badge-danger"
+    };
+
+    var summary = Model.Status switch
+    {
+        BookingStatus.Confirmed => "You're booked. See you there.",
+        BookingStatus.Waitlisted => "You're on the waitlist. If a spot opens, you'll get an email.",
+        BookingStatus.Offered => $"A spot opened up and it's being held for you until {Model.HoldExpiresAt?.ToClassTime()}.",
+        BookingStatus.Cancelled => "This booking was cancelled.",
+        _ => "This waitlist spot or hold has expired."
+    };
+}
+
+<div class="narrow">
+    <a class="back" asp-controller="Home" asp-action="Index">&larr; All classes</a>
+
+    <div class="card">
+        <span class="@badge">@Model.Status</span>
+        <h1>@Model.ClassTitle</h1>
+        <p class="meta">@Model.StartTime.ToClassTime()</p>
+        <p>@summary</p>
+
+        @if (Model.Status == BookingStatus.Confirmed && !Model.CanCancel)
+        {
+            <p class="hint">Bookings can't be cancelled within an hour of the class.</p>
+        }
+
+        @if (Model.CanClaim || Model.CanCancel)
+        {
+            <div class="actions">
+                @if (Model.CanClaim)
+                {
+                    <form method="post" asp-action="Claim" asp-route-id="@Model.BookingId">
+                        <button type="submit" class="btn">Claim my spot</button>
+                    </form>
+                }
+                @if (Model.CanCancel)
+                {
+                    <form method="post" asp-action="Cancel" asp-route-id="@Model.BookingId" onsubmit="return confirm('Are you sure?');">
+                        <button type="submit" class="btn btn-danger">@(Model.Status == BookingStatus.Offered ? "Decline the spot" : "Cancel booking")</button>
+                    </form>
+                }
+            </div>
+        }
+    </div>
+</div>

@@ -1,8 +1,42 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model HomeViewModel
+@{
+    ViewData["Title"] = Model.SelectedCategory?.Spaced() ?? "Classes";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="page-head">
+    <h1>@(Model.SelectedCategory is null ? "Find a class" : Model.SelectedCategory.Value.Spaced())</h1>
+    <p class="lede">Pick a category, then choose an instructor to see their upcoming classes.</p>
+</div>
+
+<div class="split">
+    <nav class="category-nav" aria-label="Categories">
+        <a asp-action="Index" class="@(Model.SelectedCategory is null ? "active" : null)">All categories</a>
+        @foreach (var category in Model.Categories)
+        {
+            <a asp-action="Index" asp-route-category="@category" class="@(Model.SelectedCategory == category ? "active" : null)">@category.Spaced()</a>
+        }
+    </nav>
+
+    <section>
+        @if (Model.Instructors.Count == 0)
+        {
+            <p class="empty">No instructors are teaching upcoming classes here yet.</p>
+        }
+        else
+        {
+            <div class="card-grid">
+                @foreach (var instructor in Model.Instructors)
+                {
+                    <a class="card card-link" asp-controller="Instructors" asp-action="Details" asp-route-id="@instructor.Id" asp-route-category="@Model.SelectedCategory">
+                        <h2>@instructor.Name</h2>
+                        @if (!string.IsNullOrWhiteSpace(instructor.Bio))
+                        {
+                            <p>@instructor.Bio</p>
+                        }
+                        <span class="meta">@instructor.UpcomingClassCount upcoming @(instructor.UpcomingClassCount == 1 ? "class" : "classes")</span>
+                    </a>
+                }
+            </div>
+        }
+    </section>
 </div>

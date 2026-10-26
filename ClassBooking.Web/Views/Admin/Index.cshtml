@@ -1,0 +1,89 @@
+﻿@model AdminClassListViewModel
+@{
+    ViewData["Title"] = "Admin";
+}
+
+<div class="page-head page-head-row">
+    <div>
+        <h1>Classes</h1>
+        <p class="lede">Manage the schedule, rosters and instructors.</p>
+    </div>
+    <div class="actions">
+        <a class="btn" asp-action="Create">New class</a>
+        <a class="btn btn-secondary" asp-action="CreateInstructor">Add instructor</a>
+    </div>
+</div>
+
+<form method="get" asp-action="Index" class="filter-bar">
+    <div class="field">
+        <label asp-for="Category"></label>
+        <select asp-for="Category" asp-items="Html.GetEnumSelectList<Category>()">
+            <option value="">All categories</option>
+        </select>
+    </div>
+    <label class="check">
+        <input asp-for="ShowInactive" />
+        @Html.DisplayNameFor(m => m.ShowInactive)
+    </label>
+    <div class="actions">
+        <button type="submit" class="btn">Apply</button>
+        <a class="btn btn-secondary" asp-action="Index">Clear</a>
+    </div>
+</form>
+
+@if (Model.Classes.Count == 0)
+{
+    <p class="empty">No classes match these filters.</p>
+}
+else
+{
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Class</th>
+                    <th>Instructor</th>
+                    <th>Starts</th>
+                    <th>Booked</th>
+                    <th>Waitlist</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.Classes)
+                {
+                    <tr>
+                        <td><strong>@row.Title</strong></td>
+                        <td>@row.InstructorName</td>
+                        <td>@row.StartTime.ToShortClassTime()</td>
+                        <td>@row.ConfirmedCount / @row.Capacity</td>
+                        <td>@row.WaitlistCount</td>
+                        <td>
+                            @if (row.IsCancelled)
+                            {
+                                <span class="badge badge-danger">Cancelled</span>
+                            }
+                            else
+                            {
+                                <span class="badge">Scheduled</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <a class="btn btn-secondary btn-small" asp-action="Roster" asp-route-id="@row.Id">Roster</a>
+                                @if (!row.IsCancelled)
+                                {
+                                    <a class="btn btn-secondary btn-small" asp-action="Edit" asp-route-id="@row.Id">Edit</a>
+                                    <form method="post" asp-action="CancelClass" asp-route-id="@row.Id" onsubmit="return confirm('Cancel this class? Everyone booked will be emailed.');">
+                                        <button type="submit" class="btn btn-danger btn-small">Cancel</button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
