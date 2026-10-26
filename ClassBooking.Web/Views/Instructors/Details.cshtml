@@ -1,0 +1,65 @@
+﻿@model InstructorViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<a class="back" asp-controller="Home" asp-action="Index" asp-route-category="@Model.Category">&larr; Back to instructors</a>
+
+<div class="page-head">
+    <h1>@Model.Name</h1>
+    @if (!string.IsNullOrWhiteSpace(Model.Bio))
+    {
+        <p class="lede">@Model.Bio</p>
+    }
+</div>
+
+<form method="get" asp-action="Details" asp-route-id="@Model.Id" class="filter-bar">
+    <div class="field">
+        <label asp-for="Category"></label>
+        <select asp-for="Category" asp-items="Html.GetEnumSelectList<Category>()">
+            <option value="">All categories</option>
+        </select>
+    </div>
+    <div class="field">
+        <label asp-for="From"></label>
+        <input asp-for="From" type="date" asp-format="{0:yyyy-MM-dd}" />
+    </div>
+    <label class="check">
+        <input asp-for="OnlyOpen" />
+        @Html.DisplayNameFor(m => m.OnlyOpen)
+    </label>
+    <div class="actions">
+        <button type="submit" class="btn">Apply</button>
+        <a class="btn btn-secondary" asp-action="Details" asp-route-id="@Model.Id">Clear</a>
+    </div>
+</form>
+
+@if (Model.Classes.Count == 0)
+{
+    <p class="empty">No upcoming classes match these filters.</p>
+}
+else
+{
+    <div class="class-list">
+        @foreach (var item in Model.Classes)
+        {
+            <div class="card class-row">
+                <div>
+                    <h3>@item.Title</h3>
+                    <span class="meta">@item.StartTime.ToClassTime() &middot; @item.Category.Spaced()</span>
+                </div>
+                <div class="actions">
+                    @if (item.IsFull)
+                    {
+                        <span class="badge badge-warn">Full</span>
+                    }
+                    else
+                    {
+                        <span class="badge">@item.SpotsLeft @(item.SpotsLeft == 1 ? "spot" : "spots") left</span>
+                    }
+                    <a class="btn btn-small" asp-controller="Classes" asp-action="Details" asp-route-id="@item.Id">View class</a>
+                </div>
+            </div>
+        }
+    </div>
+}

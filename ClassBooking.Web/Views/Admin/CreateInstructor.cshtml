@@ -1,0 +1,34 @@
+﻿@model InstructorFormViewModel
+@{
+    ViewData["Title"] = "Add instructor";
+}
+
+<div class="narrow">
+    <a class="back" asp-action="Index">&larr; Back to classes</a>
+    <h1>Add instructor</h1>
+
+    <form method="post" asp-action="CreateInstructor" class="form card">
+        <div asp-validation-summary="ModelOnly"></div>
+
+        <div class="field">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" />
+            <span asp-validation-for="Name"></span>
+        </div>
+
+        <div class="field">
+            <label asp-for="Bio"></label>
+            <textarea asp-for="Bio"></textarea>
+            <span asp-validation-for="Bio"></span>
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="btn">Add instructor</button>
+            <a class="btn btn-secondary" asp-action="Index">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
