@@ -14,10 +14,12 @@ public class AdminController(AppDbContext db, INotificationService notifier) : C
 {
     public async Task<IActionResult> Index(Category? category, bool showInactive)
     {
-        var now = StudioTime.ToLocal(DateTime.UtcNow);
-        var query = await db.FitnessClasses.AsQueryable();
+        var now = DateTime.UtcNow;
+        var query = db.FitnessClasses.AsQueryable();
+
         if (!showInactive)
-            query = query.Where(category => !category.IsCancelled && category.Startime > now);
+            query = query.Where(c => !c.IsCancelled && c.StartTime > now);
+
         if (category is not null)
             query = query.Where(c => c.Category == category);
 
