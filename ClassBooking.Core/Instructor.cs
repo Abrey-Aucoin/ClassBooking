@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ClassBooking.Core;
 
@@ -16,6 +13,4 @@ public class Instructor
     public string? Bio { get; set; }
 
     public List<FitnessClass> FitnessClasses { get; private set; } = [];
-
-
 }

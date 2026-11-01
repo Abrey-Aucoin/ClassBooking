@@ -1,0 +1,40 @@
+﻿@host = http://localhost:5234
+
+### All upcoming classes
+GET {{host}}/api/classes
+
+### Filtered: yoga only, with open spots
+GET {{host}}/api/classes?category=Yoga&onlyOpen=true
+
+### One class
+GET {{host}}/api/classes/1
+
+### Class that doesn't exist (404)
+GET {{host}}/api/classes/9999
+
+### Book a class (201)
+POST {{host}}/api/classes/1/bookings
+Content-Type: application/json
+
+{
+  "memberName": "Api Tester",
+  "memberEmail": "api@example.com"
+}
+
+### Book the same email again (409)
+POST {{host}}/api/classes/1/bookings
+Content-Type: application/json
+
+{
+  "memberName": "Api Tester",
+  "memberEmail": "api@example.com"
+}
+
+### Invalid request (400)
+POST {{host}}/api/classes/1/bookings
+Content-Type: application/json
+
+{
+  "memberName": "",
+  "memberEmail": "not-an-email"
+}

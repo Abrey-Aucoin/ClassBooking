@@ -1,7 +1,4 @@
-﻿
-using ClassBooking.Core;
-using System.Runtime.CompilerServices;
-using Xunit.Sdk;
+﻿using ClassBooking.Core;
 
 namespace ClassBooking.Tests
 {
@@ -28,7 +25,6 @@ namespace ClassBooking.Tests
 
             var notification = Assert.Single(notifications);
             Assert.Equal("sam@test.com", notification.Email);
-
         }
 
         [Fact]
@@ -145,7 +141,5 @@ namespace ClassBooking.Tests
 
             Assert.Equal(BookingStatus.Confirmed, rebooked.Status);
         }
-
-
     }
 }
