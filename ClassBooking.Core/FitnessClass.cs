@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Reflection.Metadata;
-using System.Security.Cryptography.X509Certificates;
 
 namespace ClassBooking.Core
 {
@@ -89,9 +87,7 @@ namespace ClassBooking.Core
             _bookings.Add(booking);
             return booking;
         }
-        
 
-        // cancel bookings
         public List<Notification> CancelBooking(Booking booking, DateTime now)
         {
             var notifications = new List<Notification>();
@@ -108,7 +104,6 @@ namespace ClassBooking.Core
             return notifications;
         }
 
-        // Offer newly opened spots to waitlist
         private void OfferOpenSpots(DateTime now, List<Notification> notifications)
         {
             var fullHold = now + HoldDuration;
@@ -120,9 +115,7 @@ namespace ClassBooking.Core
                 next.Offer(holdEnd);
                 notifications.Add(new Notification(next.MemberEmail, $"A spot opened up for {Title}", $"Claim before {holdEnd:g}."));
             }
-
         }
-        // Claim the offer 
 
         public void ClaimOffer(Booking booking, DateTime now)
         {
@@ -137,8 +130,6 @@ namespace ClassBooking.Core
 
             booking.ClaimOffer();
         }
-
-        //process the expired holds
 
         public List<Notification> ProcessExpiredHolds(DateTime now)
         {
@@ -181,7 +172,6 @@ namespace ClassBooking.Core
             return notifications;
         }
 
-        //Change class capacity
         public List<Notification> ChangeCapacity(int newCapacity, DateTime now)
         {
             var notifications = new List<Notification>();
@@ -202,8 +192,6 @@ namespace ClassBooking.Core
 
             return notifications;
         }
-
-        // Cancel the whole class
 
         public List<Notification> Cancel(DateTime now)
         {
@@ -228,8 +216,6 @@ namespace ClassBooking.Core
 
             return notifications;
         }
-
-        //Update class details
 
         public void UpdateDetails(string title, string? description, Category category, int instructorId, DateTime startTime, DateTime now)
         {

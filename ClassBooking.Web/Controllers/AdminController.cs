@@ -6,7 +6,6 @@ using ClassBooking.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.CodeAnalysis;
 
 namespace ClassBooking.Web.Controllers;
 
@@ -46,7 +45,6 @@ public class AdminController(AppDbContext db, INotificationService notifier) : C
         };
 
         return View(model);
-
     }
 
     public async Task<IActionResult> Create()
@@ -60,11 +58,9 @@ public class AdminController(AppDbContext db, INotificationService notifier) : C
         return View("ClassForm", model);
     }
 
-
-
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(ClassFormViewModel form) 
+    public async Task<IActionResult> Create(ClassFormViewModel form)
     {
         if (!ModelState.IsValid)
             return await ShowFormAsync(form);
@@ -92,7 +88,7 @@ public class AdminController(AppDbContext db, INotificationService notifier) : C
         return RedirectToAction(nameof(Index));
     }
 
-    public async Task<IActionResult> Edit(int id) 
+    public async Task<IActionResult> Edit(int id)
     {
         var fitnessClass = await db.FitnessClasses.FirstOrDefaultAsync(c => c.Id == id);
 
@@ -115,7 +111,7 @@ public class AdminController(AppDbContext db, INotificationService notifier) : C
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(ClassFormViewModel form) 
+    public async Task<IActionResult> Edit(ClassFormViewModel form)
     {
         if (!ModelState.IsValid)
             return await ShowFormAsync(form);
@@ -160,7 +156,7 @@ public class AdminController(AppDbContext db, INotificationService notifier) : C
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CancelClass(int id) 
+    public async Task<IActionResult> CancelClass(int id)
     {
         var fitnessClass = await db.FitnessClasses
         .Include(c => c.Bookings)
@@ -187,7 +183,7 @@ public class AdminController(AppDbContext db, INotificationService notifier) : C
         return RedirectToAction(nameof(Index));
     }
 
-    public async Task<IActionResult> Roster(int id) 
+    public async Task<IActionResult> Roster(int id)
     {
         var fitnessClass = await db.FitnessClasses
         .Include(c => c.Bookings)
@@ -221,15 +217,14 @@ public class AdminController(AppDbContext db, INotificationService notifier) : C
         return View(model);
     }
 
-    public IActionResult CreateInstructor() 
+    public IActionResult CreateInstructor()
     {
         return View(new InstructorFormViewModel());
-
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateInstructor(InstructorFormViewModel form) 
+    public async Task<IActionResult> CreateInstructor(InstructorFormViewModel form)
     {
         if (!ModelState.IsValid)
             return View(form);
