@@ -10,7 +10,7 @@ namespace ClassBooking.Core
         public static readonly TimeSpan SignupCutoff = TimeSpan.FromMinutes(5);
         public static readonly TimeSpan MarketRelease = TimeSpan.FromHours(1);
 
-        public readonly List<Booking> _bookings = [];
+        private readonly List<Booking> _bookings = [];
 
         public int Id { get; private set; }
 

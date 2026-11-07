@@ -6,7 +6,7 @@ A booking app for a fitness studio, built with ASP.NET Core MVC, Entity Framewor
 
 ## Screenshots
 
-<!-- Add screenshots to docs/screenshots and update the file names below -->
+![Home page](docs/screenshots/home-page.png)
 ![Class page](docs/screenshots/class-page.png)
 ![Manage booking](docs/screenshots/manage-booking.png)
 ![Admin class list](docs/screenshots/admin.png)
@@ -50,7 +50,6 @@ I wrote these out before writing any code, and every one of them is covered by t
 
 I sketched the main screens before building anything. The finished app grew a few pages the sketches didn't have, mainly the instructor page, manage booking and add instructor, once the rules made it clear they were needed.
 
-<!-- Add the wireframe image to docs/wireframes.png -->
 ![Wireframes](docs/wireframes.png)
 
 ## Architecture
